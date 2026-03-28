@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dani Doces — Como funciona o seu app</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rosa:       #E8437A;
+    --rosa-deep:  #C4295E;
+    --rosa-light: #F9C4D5;
+    --rosa-pale:  #FEF0F5;
+    --creme:      #FFF8F0;
+    --marrom:     #3D1A1A;
+    --marrom-mid: #7A4040;
+    --cinza:      #F4EEE8;
+    --verde-ok:   #2D9E6B;
+    --amarelo:    #F5C842;
+    --texto:      #2C1515;
+    --texto-mid:  #6B3E3E;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--creme);
+    color: var(--texto);
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    background: var(--marrom);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 3rem 2rem;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 110%, rgba(232,67,122,0.35) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 85% -10%, rgba(196,41,94,0.25) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(245,200,66,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Bolhas decorativas */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.07;
+  }
+  .blob-1 { width: 400px; height: 400px; background: var(--rosa); top: -100px; right: -100px; }
+  .blob-2 { width: 250px; height: 250px; background: var(--amarelo); bottom: 40px; left: -60px; }
+  .blob-3 { width: 150px; height: 150px; background: var(--rosa-light); top: 40%; left: 5%; }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(232,67,122,0.18);
+    border: 1px solid rgba(232,67,122,0.35);
+    color: var(--rosa-light);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 2rem;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .hero-emoji {
+    font-size: 4.5rem;
+    display: block;
+    margin-bottom: 1.2rem;
+    animation: fadeDown 0.7s ease 0.1s both;
+    filter: drop-shadow(0 4px 24px rgba(232,67,122,0.4));
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 8vw, 5.5rem);
+    font-weight: 900;
+    color: #fff;
+    text-align: center;
+    line-height: 1.05;
+    animation: fadeDown 0.7s ease 0.15s both;
+  }
+
+  .hero h1 span {
+    color: var(--rosa);
+    font-style: italic;
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    color: rgba(255,255,255,0.65);
+    text-align: center;
+    margin-top: 1.2rem;
+    max-width: 520px;
+    font-weight: 300;
+    line-height: 1.6;
+    animation: fadeDown 0.7s ease 0.25s both;
+  }
+
+  .hero-cta {
+    display: inline-block;
+    margin-top: 2.5rem;
+    background: var(--rosa);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.9rem 2.2rem;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 8px 32px rgba(232,67,122,0.4);
+    animation: fadeDown 0.7s ease 0.35s both;
+  }
+  .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(232,67,122,0.5); }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,0.3);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    animation: fadeDown 1s ease 0.8s both;
+  }
+  .scroll-hint::after {
+    content: '';
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+    animation: scrollLine 1.5s ease-in-out infinite;
+  }
+
+  /* ── SEÇÕES GENÉRICAS ── */
+  section { padding: 5rem 2rem; }
+
+  .container { max-width: 860px; margin: 0 auto; }
+
+  .section-label {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rosa);
+    margin-bottom: 0.8rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--texto);
+    margin-bottom: 1rem;
+  }
+
+  .section-title em { font-style: italic; color: var(--rosa-deep); }
+
+  .section-desc {
+    font-size: 1.05rem;
+    color: var(--texto-mid);
+    line-height: 1.75;
+    max-width: 600px;
+    font-weight: 400;
+  }
+
+  /* ── O QUE É ── */
+  .oque-e {
+    background: #fff;
+    border-bottom: 1px solid #F0E4E4;
+  }
+
+  .oque-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  @media (max-width: 600px) { .oque-grid { grid-template-columns: 1fr; } }
+
+  .oque-card {
+    border-radius: 16px;
+    padding: 1.6rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .oque-card.sim {
+    background: var(--rosa-pale);
+    border: 1.5px solid var(--rosa-light);
+  }
+  .oque-card.nao {
+    background: var(--cinza);
+    border: 1.5px solid #E8DADA;
+  }
+
+  .oque-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .oque-card.sim .oque-card-header { color: var(--rosa-deep); }
+  .oque-card.nao .oque-card-header { color: var(--marrom-mid); }
+
+  .oque-card-header .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .oque-card.sim .dot { background: var(--rosa); }
+  .oque-card.nao .dot { background: #B8A0A0; }
+
+  .oque-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    color: var(--texto);
+    line-height: 1.5;
+  }
+
+  .oque-item-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── COMO FUNCIONA ── */
+  .como-funciona { background: var(--creme); }
+
+  .steps {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 1.5rem;
+    position: relative;
+    padding-bottom: 2.5rem;
+  }
+
+  .step:last-child { padding-bottom: 0; }
+
+  .step:not(:last-child) .step-line::after {
+    content: '';
+    position: absolute;
+    left: 31px;
+    top: 64px;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--rosa-light), transparent);
+  }
+
+  .step-line { position: relative; }
+
+  .step-num {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: var(--rosa);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    flex-shrink: 0;
+    box-shadow: 0 4px 20px rgba(232,67,122,0.3);
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-content { padding-top: 0.8rem; }
+
+  .step-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--texto);
+    margin-bottom: 0.4rem;
+  }
+
+  .step-desc {
+    font-size: 0.95rem;
+    color: var(--texto-mid);
+    line-height: 1.65;
+  }
+
+  .step-tag {
+    display: inline-block;
+    margin-top: 0.6rem;
+    background: var(--rosa-pale);
+    color: var(--rosa-deep);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.7rem;
+    border-radius: 100px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── ARQUITETURA VISUAL ── */
+  .arquitetura {
+    background: var(--marrom);
+    color: #fff;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .arquitetura .section-title { color: #fff; }
+  .arquitetura .section-desc { color: rgba(255,255,255,0.6); }
+
+  .arq-diagram {
+    margin-top: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+
+  .arq-node {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 1.4rem 1.6rem;
+    text-align: center;
+    min-width: 130px;
+    transition: background 0.2s;
+  }
+  .arq-node:hover { background: rgba(232,67,122,0.12); border-color: rgba(232,67,122,0.3); }
+
+  .arq-node-icon { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+  .arq-node-name { font-size: 0.85rem; font-weight: 600; color: #fff; }
+  .arq-node-sub { font-size: 0.72rem; color: rgba(255,255,255,0.45); margin-top: 0.2rem; }
+
+  .arq-arrow {
+    font-size: 1.3rem;
+    color: rgba(232,67,122,0.6);
+    padding: 0 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .arq-highlight { border-color: rgba(232,67,122,0.5); background: rgba(232,67,122,0.1); }
+
+  .arq-note {
+    margin-top: 2rem;
+    background: rgba(245,200,66,0.1);
+    border: 1px solid rgba(245,200,66,0.25);
+    border-radius: 12px;
+    padding: 1rem 1.4rem;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+  }
+
+  /* ── VANTAGENS ── */
+  .vantagens { background: #fff; }
+
+  .vant-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.2rem;
+    margin-top: 3rem;
+  }
+
+  .vant-card {
+    border-radius: 16px;
+    padding: 1.6rem;
+    background: var(--creme);
+    border: 1.5px solid #EDE0DA;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .vant-card:hover { transform: translateY(-3px); border-color: var(--rosa-light); }
+
+  .vant-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.8rem;
+  }
+
+  .vant-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--texto);
+    margin-bottom: 0.4rem;
+  }
+
+  .vant-desc {
+    font-size: 0.88rem;
+    color: var(--texto-mid);
+    line-height: 1.6;
+  }
+
+  /* ── FAQ ── */
+  .faq-section { background: var(--creme); }
+
+  .faq-list { margin-top: 2.5rem; }
+
+  .faq-item {
+    border-bottom: 1px solid #E8DADA;
+    overflow: hidden;
+  }
+
+  .faq-q {
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 1.3rem 0;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--texto);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    transition: color 0.2s;
+  }
+  .faq-q:hover { color: var(--rosa-deep); }
+
+  .faq-arrow {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--rosa-pale);
+    color: var(--rosa);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: transform 0.3s, background 0.2s;
+  }
+
+  .faq-item.open .faq-arrow {
+    transform: rotate(45deg);
+    background: var(--rosa);
+    color: #fff;
+  }
+
+  .faq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s ease;
+    font-size: 0.95rem;
+    color: var(--texto-mid);
+    line-height: 1.7;
+  }
+
+  .faq-item.open .faq-a {
+    max-height: 300px;
+    padding-bottom: 1.2rem;
+  }
+
+  .faq-a strong { color: var(--rosa-deep); }
+
+  /* ── RODAPÉ ── */
+  .footer {
+    background: var(--marrom);
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    padding: 3rem 2rem;
+    font-size: 0.85rem;
+  }
+  .footer strong { color: var(--rosa-light); }
+
+  /* ── ANIMAÇÕES ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scrollLine {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50%       { opacity: 1;   transform: scaleY(0.6); }
+  }
+
+  /* Reveal ao scroll */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 600px) {
+    .arq-diagram { flex-direction: column; gap: 0.5rem; }
+    .arq-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════ HERO ══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="hero-badge">🍬 Seu app de gestão</div>
+  <span class="hero-emoji">🍫</span>
+  <h1>Dani <span>Doces</span></h1>
+  <p class="hero-sub">
+    Um caderninho digital inteligente — feito para você anotar vendas, acompanhar clientes e nunca mais perder uma cobrança.
+  </p>
+  <a href="#oque-e" class="hero-cta">Entender como funciona →</a>
+
+  <div class="scroll-hint">role para baixo</div>
+</section>
+
+
+<!-- ═══════════════════════════════════ O QUE É ══ -->
+<section class="oque-e" id="oque-e">
+  <div class="container">
+    <span class="section-label reveal">O que é o app</span>
+    <h2 class="section-title reveal">É o seu <em>caderninho</em>,<br>só que no celular.</h2>
+    <p class="section-desc reveal">
+      Pensa assim: você já tem o hábito de anotar quem comprou e quanto deve. O Dani Doces faz exatamente isso — mas organizado, rápido e com backup automático. Sem planilha complicada. Sem papel perdido.
+    </p>
+
+    <div class="oque-grid">
+      <div class="oque-card sim reveal reveal-delay-1">
+        <div class="oque-card-header"><div class="dot"></div> O app É</div>
+        <div class="oque-item"><span class="oque-item-icon">✅</span> Um registro rápido de vendas por cliente</div>
+        <div class="oque-item"><span class="oque-item-icon">✅</span> Um controle de quem pagou e quem está em aberto</div>
+        <div class="oque-item"><span class="oque-item-icon">✅</span> Um gerador de resumo de cobrança pelo WhatsApp</div>
+        <div class="oque-item"><span class="oque-item-icon">✅</span> Algo que funciona <strong>sem internet</strong></div>
+        <div class="oque-item"><span class="oque-item-icon">✅</span> Um backup seguro na sua planilha Google</div>
+      </div>
+      <div class="oque-card nao reveal reveal-delay-2">
+        <div class="oque-card-header"><div class="dot"></div> O app NÃO É</div>
+        <div class="oque-item"><span class="oque-item-icon">✗</span> Um sistema de emissão de nota fiscal</div>
+        <div class="oque-item"><span class="oque-item-icon">✗</span> Um controle de estoque de ingredientes</div>
+        <div class="oque-item"><span class="oque-item-icon">✗</span> Um aplicativo de banco ou pagamento</div>
+        <div class="oque-item"><span class="oque-item-icon">✗</span> Dependente de mensalidade ou assinatura</div>
+        <div class="oque-item"><span class="oque-item-icon">✗</span> Algo que só funciona com internet o tempo todo</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════ COMO FUNCIONA ══ -->
+<section class="como-funciona" id="como-funciona">
+  <div class="container">
+    <span class="section-label reveal">Passo a passo</span>
+    <h2 class="section-title reveal">Como funciona <em>na prática</em></h2>
+    <p class="section-desc reveal">Simples como anotar num caderno. Só que melhor.</p>
+
+    <div class="steps">
+
+      <div class="step reveal reveal-delay-1">
+        <div class="step-line">
+          <div class="step-num">1</div>
+        </div>
+        <div class="step-content">
+          <div class="step-title">Você registra a venda</div>
+          <div class="step-desc">
+            Toca em "+ Nova Venda", escolhe o cliente (ou cria um novo), informa o que vendeu, o valor e a quantidade. Leva menos de 30 segundos.
+          </div>
+          <span class="step-tag">📱 Feito no celular</span>
+        </div>
+      </div>
+
+      <div class="step reveal reveal-delay-2">
+        <div class="step-line">
+          <div class="step-num">2</div>
+        </div>
+        <div class="step-content">
+          <div class="step-title">O app guarda tudo localmente</div>
+          <div class="step-desc">
+            Mesmo sem internet, os dados ficam salvos direto no seu celular. Você pode anotar no meio da entrega, sem sinal, e não perde nada.
+          </div>
+          <span class="step-tag">📶 Funciona offline</span>
+        </div>
+      </div>
+
+      <div class="step reveal reveal-delay-3">
+        <div class="step-line">
+          <div class="step-num">3</div>
+        </div>
+        <div class="step-content">
+          <div class="step-title">Quando tiver internet, sincroniza sozinho</div>
+          <div class="step-desc">
+            Conectou o Wi-Fi? O app manda tudo para sua planilha Google automaticamente. Você tem uma cópia segura na nuvem, sempre atualizada.
+          </div>
+          <span class="step-tag">☁️ Backup automático</span>
+        </div>
+      </div>
+
+      <div class="step reveal reveal-delay-4">
+        <div class="step-line">
+          <div class="step-num">4</div>
+        </div>
+        <div class="step-content">
+          <div class="step-title">Hora de cobrar? Um toque no WhatsApp</div>
+          <div class="step-desc">
+            O app monta o resumo do mês para o cliente com tudo discriminado — data, produto e valor — e abre direto no WhatsApp pra você enviar.
+          </div>
+          <span class="step-tag">💬 Cobrança fácil</span>
+        </div>
+      </div>
+
+      <div class="step reveal">
+        <div class="step-line">
+          <div class="step-num">5</div>
+        </div>
+        <div class="step-content">
+          <div class="step-title">Pagou? Marca como pago</div>
+          <div class="step-desc">
+            Toca na venda ou no resumo do cliente e marca como pago. O saldo em aberto atualiza na hora. Nada some — fica no histórico.
+          </div>
+          <span class="step-tag">✅ Controle de recebimentos</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════ ARQUITETURA ══ -->
+<section class="arquitetura">
+  <div class="hero-bg"></div>
+  <div class="container" style="position:relative; z-index:1;">
+    <span class="section-label reveal" style="color:var(--rosa-light);">Por baixo dos panos</span>
+    <h2 class="section-title reveal">Como as peças <em>se conectam</em></h2>
+    <p class="section-desc reveal">Você não precisa entender isso pra usar — mas saber que existe te dá segurança.</p>
+
+    <div class="arq-diagram reveal">
+      <div class="arq-node arq-highlight">
+        <span class="arq-node-icon">📱</span>
+        <div class="arq-node-name">Seu celular</div>
+        <div class="arq-node-sub">O app (PWA)</div>
+      </div>
+      <div class="arq-arrow">⟷</div>
+      <div class="arq-node">
+        <span class="arq-node-icon">💾</span>
+        <div class="arq-node-name">Memória local</div>
+        <div class="arq-node-sub">Funciona offline</div>
+      </div>
+      <div class="arq-arrow">→</div>
+      <div class="arq-node">
+        <span class="arq-node-icon">⚙️</span>
+        <div class="arq-node-name">Servidor</div>
+        <div class="arq-node-sub">Google Apps Script</div>
+      </div>
+      <div class="arq-arrow">→</div>
+      <div class="arq-node">
+        <span class="arq-node-icon">📊</span>
+        <div class="arq-node-name">Planilha</div>
+        <div class="arq-node-sub">Google Sheets</div>
+      </div>
+    </div>
+
+    <div class="arq-note reveal">
+      <span>💡</span>
+      <span>
+        O app vive no seu celular como se fosse instalado da loja — mas sem precisar de loja. Os dados ficam no celular primeiro, e vão para a nuvem quando há internet. <strong>Você nunca perde o que anotou</strong> por falta de sinal.
+      </span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════ VANTAGENS ══ -->
+<section class="vantagens">
+  <div class="container">
+    <span class="section-label reveal">Por que usar</span>
+    <h2 class="section-title reveal">O que você <em>ganha</em> com isso</h2>
+
+    <div class="vant-grid">
+      <div class="vant-card reveal reveal-delay-1">
+        <span class="vant-icon">⚡</span>
+        <div class="vant-title">Rápido de verdade</div>
+        <div class="vant-desc">Registrar uma venda leva menos tempo do que escrever num caderno. Sem papelada.</div>
+      </div>
+      <div class="vant-card reveal reveal-delay-2">
+        <span class="vant-icon">📶</span>
+        <div class="vant-title">Funciona sem sinal</div>
+        <div class="vant-desc">Entregou no interior, sem internet? Anote mesmo assim. Sincroniza quando chegar em casa.</div>
+      </div>
+      <div class="vant-card reveal reveal-delay-3">
+        <span class="vant-icon">🔒</span>
+        <div class="vant-title">Seus dados, só seus</div>
+        <div class="vant-desc">Tudo vai para a sua própria planilha Google. Nenhuma empresa terceira tem acesso.</div>
+      </div>
+      <div class="vant-card reveal reveal-delay-4">
+        <span class="vant-icon">💸</span>
+        <div class="vant-title">Sem mensalidade</div>
+        <div class="vant-desc">O app é seu. Não depende de plano pago, assinatura ou serviço que pode fechar amanhã.</div>
+      </div>
+      <div class="vant-card reveal reveal-delay-1">
+        <span class="vant-icon">📊</span>
+        <div class="vant-title">Histórico completo</div>
+        <div class="vant-desc">Veja tudo que foi vendido por cliente, mês a mês. Nada se perde quando você fechar o app.</div>
+      </div>
+      <div class="vant-card reveal reveal-delay-2">
+        <span class="vant-icon">💬</span>
+        <div class="vant-title">Cobrança sem constrangimento</div>
+        <div class="vant-desc">O resumo para o WhatsApp sai profissional, com tudo discriminado. Parece formal, mas vai em segundos.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════ FAQ ══ -->
+<section class="faq-section">
+  <div class="container">
+    <span class="section-label reveal">Dúvidas frequentes</span>
+    <h2 class="section-title reveal">Perguntas <em>comuns</em></h2>
+
+    <div class="faq-list reveal">
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Se meu celular quebrar, perco tudo?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a">
+          <strong>Não, se você tiver sincronizado.</strong> Toda vez que o app conecta à internet, ele manda uma cópia para a sua planilha Google. Se trocar de celular, é só configurar o app de novo e os dados continuam lá — na planilha. Por isso a sincronização é importante: faça ela sempre que tiver Wi-Fi.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Precisa de internet pra usar o dia a dia?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a">
+          <strong>Não.</strong> O app funciona completamente offline. Você anota vendas, consulta clientes e vê resumos sem nenhuma conexão. A internet só é necessária para sincronizar com a planilha Google — e isso acontece automaticamente quando você reconecta.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Como acesso minha planilha Google?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a">
+          Acesse <strong>planilhas.google.com</strong> com a mesma conta Google que foi usada para configurar o app. Lá você vai ver as abas <em>CLIENTES</em>, <em>VENDAS</em>, <em>RESUMO</em> e <em>CONFIG</em>. É o seu backup completo, sempre atualizado.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          E se eu esquecer o PIN?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a">
+          Infelizmente, o PIN não tem recuperação — ele fica só no seu celular por segurança. Se esquecer, você precisará limpar os dados do site no Chrome (Configurações → Site → Dani Doces → Limpar dados). <strong>Mas os dados não somem:</strong> tudo que já foi sincronizado continua seguro na planilha Google.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Posso usar em mais de um celular?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a">
+          Sim, tecnicamente é possível instalar em outro celular apontando para o mesmo servidor. Mas o app foi pensado para <strong>uso individual</strong>. Se dois celulares registrarem vendas ao mesmo tempo sem sincronizar, pode haver conflito de dados. Para um uso só, funciona perfeitamente.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Precisa pagar por alguma coisa?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a">
+          <strong>Não.</strong> O app usa Google Apps Script e Google Sheets — ambos gratuitos para uso pessoal. A hospedagem do app também é gratuita (Vercel). Não há mensalidade, não há plano pago, não há nada que vença ou expire.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          E se eu quiser deletar um cliente ou uma venda?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a">
+          Você pode deletar pelo app. <strong>Atenção:</strong> deletar no app apaga do celular, mas o registro antigo pode continuar na planilha Google — ela serve como histórico. Se precisar limpar a planilha também, é só abrir e apagar as linhas manualmente.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          O app vai ser atualizado ou pode parar de funcionar?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a">
+          O app é seu — os arquivos ficam no seu GitHub e rodam na Vercel. Nenhuma empresa pode desligar ele. Enquanto o Google mantiver o Apps Script (gratuito há mais de 15 anos) e a Vercel existir, o app funciona. E mesmo que algo mude, seus dados continuam na planilha Google.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════ RODAPÉ ══ -->
+<footer class="footer">
+  <p>🍬 <strong>Dani Doces</strong> — feito com carinho para facilitar o seu dia a dia</p>
+  <p style="margin-top:0.5rem; font-size:0.78rem;">Os seus dados são seus. Sempre.</p>
+</footer>
+
+
+<script>
+  // ── Accordion FAQ
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // ── Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ── Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>
