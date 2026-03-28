@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#E8437A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Dani Doces">
+  <meta name="description" content="Caderninho digital de vendas — Dani Doces">
+  <meta name="mobile-web-app-capable" content="yes">
+  
+  <!-- Preconnect para fontes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- iOS Icons -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' fill='%23E8437A' rx='40'/><text y='130' x='90' font-size='100' text-anchor='middle'>🍬</text></svg>">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='28'>🍬</text></svg>">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <title>Dani Doces 🍬</title>
+</head>
+<body>
+
+  <!-- Tela de loading inicial -->
+  <div id="loading" class="loading-screen">
+    <div class="loading-logo">🍬</div>
+    <div class="loading-nome">Dani Doces</div>
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Container principal do app -->
+  <div id="app" style="display:none"></div>
+
+  <!-- Script principal (módulo ES6) -->
+  <script type="module">
+    import { iniciar, mostrarToast } from '/js/ui.js';
+
+    // ── Registra Service Worker ──────────────────────
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then((registro) => {
+          console.log('[App] Service Worker registrado:', registro.scope);
+
+          // Detecta atualização disponível
+          registro.addEventListener('updatefound', () => {
+            const novo = registro.installing;
+            novo.addEventListener('statechange', () => {
+              if (novo.state === 'installed' && navigator.serviceWorker.controller) {
+                // Notifica usuário sobre atualização
+                if (confirm('🔄 Nova versão disponível! Atualizar agora?')) {
+                  novo.postMessage({ tipo: 'SKIP_WAITING' });
+                  window.location.reload();
+                }
+              }
+            });
+          });
+        }).catch((err) => {
+          console.warn('[App] Falha ao registrar SW:', err);
+        });
+
+        // Ouve mensagens do SW (background sync)
+        navigator.serviceWorker.addEventListener('message', async (event) => {
+          if (event.data && event.data.tipo === 'BACKGROUND_SYNC') {
+            const { sincronizar } = await import('/js/sync.js');
+            const res = await sincronizar();
+            if (res.ok && res.enviados > 0) {
+              mostrarToast(`✅ ${res.enviados} item(s) sincronizado(s)!`);
+            }
+          }
+        });
+      });
+    }
+
+    // ── Inicializa app ───────────────────────────────
+    window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        await iniciar();
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+      } catch (err) {
+        console.error('[App] Erro ao iniciar:', err);
+        document.getElementById('loading').innerHTML = `
+          <div style="text-align:center; padding: 40px; color:white;">
+            <div style="font-size:3rem">⚠️</div>
+            <div style="font-size:1.2rem; margin-top:16px; font-weight:700">
+              Erro ao iniciar o app
+            </div>
+            <div style="font-size:0.9rem; margin-top:8px; opacity:0.85">
+              ${err.message}
+            </div>
+            <button onclick="location.reload()" 
+                    style="margin-top:24px; padding:14px 28px; background:white; 
+                           color:#E8437A; border:none; border-radius:12px; 
+                           font-size:1rem; font-weight:800; cursor:pointer;">
+              🔄 Tentar Novamente
+            </button>
+          </div>
+        `;
+      }
+    });
+
+    // ── Previne zoom no iOS ──────────────────────────
+    document.addEventListener('gesturestart', (e) => e.preventDefault());
+    
+    // ── Install prompt (Android) ─────────────────────
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      // Mostra banner após 5 segundos se não estiver instalado
+      setTimeout(() => {
+        if (deferredPrompt && !window.matchMedia('(display-mode: standalone)').matches) {
+          mostrarToast('📲 Instale o app! Toque em "Adicionar à tela inicial"', 'info', 6000);
+        }
+      }, 5000);
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredPrompt = null;
+      mostrarToast('✅ App instalado com sucesso!');
+    });
+  </script>
+</body>
+</html>

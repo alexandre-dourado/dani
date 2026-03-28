@@ -1,0 +1,28 @@
+{
+  "name": "Dani Doces — Controle de Contas",
+  "short_name": "Dani Doces",
+  "description": "Caderninho digital para controle de vendas e clientes",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF0F5",
+  "theme_color": "#E8437A",
+  "orientation": "portrait",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%23E8437A' rx='32'/><text y='130' x='96' font-size='110' text-anchor='middle'>🍬</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%23E8437A' rx='80'/><text y='360' x='256' font-size='300' text-anchor='middle'>🍬</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "finance", "productivity"],
+  "screenshots": [],
+  "prefer_related_applications": false
+}
