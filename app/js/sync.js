@@ -43,14 +43,21 @@ export async function sincronizar(onProgress) {
 
     for (const cliente of clientesPendentes) {
       try {
-        const resp = await fetch(`${gasUrl}?action=salvarCliente`, {
+        const resp = await fetch(gasUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(cliente)
+          redirect: 'follow',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'salvarCliente', ...cliente })
         });
         if (resp.ok) {
-          await marcarClienteSincronizado(cliente.id);
-          enviados++;
+          const json = await resp.json().catch(() => ({}));
+          if (json.ok !== false) {
+            await marcarClienteSincronizado(cliente.id);
+            enviados++;
+          } else {
+            console.error('GAS recusou cliente:', json.erro);
+            erros++;
+          }
         } else {
           erros++;
         }
@@ -66,14 +73,21 @@ export async function sincronizar(onProgress) {
 
     for (const venda of vendasPendentes) {
       try {
-        const resp = await fetch(`${gasUrl}?action=salvarVenda`, {
+        const resp = await fetch(gasUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(venda)
+          redirect: 'follow',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'salvarVenda', ...venda })
         });
         if (resp.ok) {
-          await marcarVendaSincronizada(venda.id);
-          enviados++;
+          const json = await resp.json().catch(() => ({}));
+          if (json.ok !== false) {
+            await marcarVendaSincronizada(venda.id);
+            enviados++;
+          } else {
+            console.error('GAS recusou venda:', json.erro);
+            erros++;
+          }
         } else {
           erros++;
         }
@@ -105,10 +119,11 @@ export async function sincronizarLote() {
 
   try {
     const dados = await exportarTudo();
-    const resp = await fetch(`${gasUrl}?action=sync`, {
+    const resp = await fetch(gasUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dados)
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'sync', ...dados })
     });
     return resp.ok;
   } catch (e) {

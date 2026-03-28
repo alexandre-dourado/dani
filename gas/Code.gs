@@ -61,7 +61,6 @@ function doGet(e) {
 // ─── Roteador principal (POST) ────────────────────────────────────────────────
 function doPost(e) {
   try {
-    const action = e.parameter.action || '';
     let body = {};
     
     try {
@@ -69,6 +68,12 @@ function doPost(e) {
     } catch (parseErr) {
       return respostaErro('JSON inválido no corpo da requisição');
     }
+    
+    // action pode vir na URL (?action=x) ou dentro do body ({action: 'x', ...})
+    const action = e.parameter.action || body.action || '';
+    
+    // Remove a chave 'action' do body para não poluir os dados
+    delete body.action;
     
     switch (action) {
       case 'salvarCliente':
