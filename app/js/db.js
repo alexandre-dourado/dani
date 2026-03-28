@@ -98,9 +98,8 @@ export async function deletarCliente(id) {
 
 export async function clientesNaoSincronizados() {
   await initDB();
-  const store = tx('clientes');
-  const index = store.index('synced');
-  return promisify(index.getAll(IDBKeyRange.only(false)));
+  const todos = await promisify(tx('clientes').getAll());
+  return todos.filter(c => !c.synced);
 }
 
 export async function marcarClienteSincronizado(id) {
@@ -109,7 +108,7 @@ export async function marcarClienteSincronizado(id) {
   const cliente = await promisify(store.get(id));
   if (cliente) {
     cliente.synced = true;
-    return promisify(tx('clientes', 'readwrite').put(cliente));
+    return promisify(store.put(cliente));
   }
 }
 
@@ -163,17 +162,17 @@ export async function marcarVendaPaga(id, pago = true) {
 
 export async function vendasNaoSincronizadas() {
   await initDB();
-  const store = tx('vendas');
-  const index = store.index('synced');
-  return promisify(index.getAll(IDBKeyRange.only(false)));
+  const todas = await promisify(tx('vendas').getAll());
+  return todas.filter(v => !v.synced);
 }
 
 export async function marcarVendaSincronizada(id) {
   await initDB();
-  const venda = await promisify(tx('vendas').get(id));
+  const store = tx('vendas', 'readwrite');
+  const venda = await promisify(store.get(id));
   if (venda) {
     venda.synced = true;
-    return promisify(tx('vendas', 'readwrite').put(venda));
+    return promisify(store.put(venda));
   }
 }
 
